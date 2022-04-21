@@ -55,6 +55,10 @@ namespace Chess_Classes {
         public void SetMaterial(Material _material) {
             materialSetter.SetMaterial(_material);
         }
-
+        //TODO: Checks if the given piece type is being attacked in the available moves of this piece
+        public bool IsAttackingPieceOfType<T>() where T: Piece
+        {
+            return false;
+        }
     }
 }

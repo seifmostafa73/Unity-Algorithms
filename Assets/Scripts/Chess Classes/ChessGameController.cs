@@ -1,17 +1,17 @@
-using System;
 using Chess_Classes.Pieces;
 using UnityEngine;
 namespace Chess_Classes{
 [RequireComponent(typeof(PieceCreator))]
 public class ChessGameController : MonoBehaviour
 {
+    enum State{Start,Play,Finish};
     [SerializeField] BoardLayoutController initialBoardLayout;
     [SerializeField] Board currentBoard;
     ChessPlayer whitePlayer;
     ChessPlayer blackPlayer;
     ChessPlayer CurrentTurnPlayer;
     [SerializeField] PieceCreator pieceCreator;
-
+    State gameState;
     void Awake()
     {
         setDependency();
@@ -29,9 +29,11 @@ public class ChessGameController : MonoBehaviour
     }
     private void RestartGameBoard()
     {
+        SetGameState(State.Start);
         CurrentTurnPlayer = whitePlayer;
         CreatePieceFromBoardLayout(initialBoardLayout);
         GeneratePlayerValidMoves(CurrentTurnPlayer);
+        SetGameState(State.Play);
     }
     public ChessPlayer GetActivePlayer()
     {
@@ -46,10 +48,24 @@ public class ChessGameController : MonoBehaviour
     {
         return new ChessPlayer(color,_board);
     }
-    private void setGameState()
+    //Todo: cghange the current state to the given state
+    private void SetGameState(State state)
     {
 
     }
+    //Todo: checks if the state is = playing
+    private bool IsGameInprogress()
+    {
+        return true;
+    }
+    ///TODO: checks if the opponent's player's king is being attacked , and doesn't have any available moves ,
+    ///  AND all pieces availble can't protect him
+    ///
+    private bool IsGameFinished()
+    {
+        return false;
+    }
+
     private void InitializeGameBoard()
     {
 
@@ -99,11 +115,17 @@ public class ChessGameController : MonoBehaviour
     {
         return  true;
     }
+    //Todo:check if game is ended (win/ lose /draw)
     public void EndTurn()
     {
         GeneratePlayerValidMoves(CurrentTurnPlayer);
         GeneratePlayerValidMoves(GetOpponentToPlayer());
         ChangePlayerTurn();
+    }
+    //TODO:sets the state to finished
+    public void EndGame()
+    {
+
     }
 }
 }

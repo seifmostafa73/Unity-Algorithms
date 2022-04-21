@@ -87,6 +87,8 @@ namespace Chess_Classes {
         /// <summary>
         /// handles whether to select/Deselect/Take the clicked piece
         /// </summary>
+        /// TODO: only allwo to select if Game in progress
+
         public void OnSquareSelected(Vector3 squarePosition)
         {
             Vector2Int squareCoordinates = CalculatedCoordinates(squarePosition);
