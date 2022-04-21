@@ -3,7 +3,6 @@ using Chess_Classes.Pieces;
 using UnityEngine;
 namespace Chess_Classes{
 [RequireComponent(typeof(PieceCreator))]
-
 public class ChessGameController : MonoBehaviour
 {
     [SerializeField] BoardLayoutController initialBoardLayout;

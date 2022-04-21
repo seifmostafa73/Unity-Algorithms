@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571343, b: 0.30692208, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028328, g: 0.22571328, b: 0.3069218, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -526,6 +526,7 @@ GameObject:
   - component: {fileID: 1657912398}
   - component: {fileID: 1657912397}
   - component: {fileID: 1657912400}
+  - component: {fileID: 1657912401}
   m_Layer: 0
   m_Name: BoardManager
   m_TagString: Untagged
@@ -602,6 +603,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 14.599064, y: 0.5290822, z: 14.599064}
   m_Center: {x: 0, y: -0.01292409, z: 0}
+--- !u!114 &1657912401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657912395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce1ae7b28fe58a1aca925b3b61a035c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeSquareColor: {r: 0.24096651, g: 0.8962264, b: 0.2602389, a: 0.78431374}
+  opponentSquareColor: {r: 0.9433962, g: 0.29814878, b: 0.29814878, a: 0.78431374}
+  squareHighlighterPrefab: {fileID: 5112115414946652336, guid: d2e5d7888ab19af91ac1d5967e59beee, type: 3}
 --- !u!4 &2109106470 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 63254154, guid: 31270e9f38d5e7a448ae050b9633fce3, type: 3}

@@ -1,6 +1,7 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 namespace Chess_Classes {
+    [RequireComponent(typeof(SquareSelectorManager))]
     public class Board : MonoBehaviour {
         [SerializeField]float boardSquareSize; //1.6 *1.6
         [SerializeField]Transform A1Square;
@@ -10,7 +11,10 @@ namespace Chess_Classes {
         //SquareSelectorManager squareSelectorManager;
         public Piece[,] grid;
 
+        SquareSelectorManager _squareSelectorManager;
+
         void Awake() {
+            _squareSelectorManager = GetComponent<SquareSelectorManager>();
             CreateGrid();
         }
 
@@ -41,16 +45,33 @@ namespace Chess_Classes {
 
         /// <summary>
         /// Selects the piece clicked on (if it meets the right conditions )
+        /// and calls the SquareSelectorManager class to highlight the available moves
         /// </summary>
         private void SelectPiece(Piece piece) {
             selectedPiece = piece;
+            List<Vector2Int> availableMoves = piece.availableMoves;
+            ShowAvailableMoves(availableMoves);
         }
 
+        private void ShowAvailableMoves(List<Vector2Int> availableMoves) {
+            Dictionary<Vector3,bool> availableSquares = new Dictionary<Vector3, bool>();
+
+            foreach(var move in availableMoves)
+            {
+                Vector3 square = CalculatePosition(move);
+                bool isSquareFree = GetPieceOnSquare(move) == null;
+                availableSquares.Add(square,isSquareFree);
+            }
+
+            _squareSelectorManager.ShowSelection(availableSquares);
+        }
         /// <summary>
         /// Deslects the currently selected piece
+        /// and calls the SquareSelectorManager class to hide the available moves
         /// </summary>
         private void DeselectPiece() {
             selectedPiece = null;
+            _squareSelectorManager.ClearSelection();
         }
 
         /// <summary>
@@ -184,6 +205,7 @@ namespace Chess_Classes {
             }
             Debug.Log(BoardString);
         }
+
 
 
     }
