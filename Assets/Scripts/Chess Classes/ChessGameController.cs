@@ -15,8 +15,9 @@ public class ChessGameController : MonoBehaviour
     void Awake()
     {
         setDependency();
-        CreatePlayers(); // Creates both thw white and black player
+        CreatePlayers(); // Creates both the white and black player
     }
+
 
     void Start()
     {
@@ -48,21 +49,41 @@ public class ChessGameController : MonoBehaviour
     {
         return new ChessPlayer(color,_board);
     }
-    //Todo: cghange the current state to the given state
     private void SetGameState(State state)
     {
+        gameState = state;
+    }
 
-    }
-    //Todo: checks if the state is = playing
-    private bool IsGameInprogress()
+    private bool IsGameInProgress()
     {
-        return true;
+        return gameState == State.Play;
     }
-    ///TODO: checks if the opponent's player's king is being attacked , and doesn't have any available moves ,
-    ///  AND all pieces availble can't protect him
-    ///
-    private bool IsGameFinished()
+
+    /// <summary>
+    /// Checks if the opponent's king is under attack by atleast one of the player's pieces, and king can't be protected or hide
+    /// </summary>
+    /// <returns> state of the game </returns>
+    public bool IsGameFinished()
     {
+        ///when is game finished ?
+        /// 1- you need the opponents King to be under attack
+        ChessPlayer opponent = GetOpponentToPlayer();
+        Piece[] attackingPieces = CurrentTurnPlayer.GetPieceAttacking<King>();
+        Debug.Log("Attacking pieces : "+attackingPieces.Length);
+        if(attackingPieces.Length > 0)
+        {
+            var kingUnderAttack = opponent.GetPiecesOfType<King>()[0];
+
+            //we need first to update the available moves to check if they are valid
+            opponent.RemoveMovesEnablingAttackOnPiece<King>(CurrentTurnPlayer,kingUnderAttack);
+        ///2-King doesn't have any other available moves
+        ///3- no piece can block the attack
+            if(kingUnderAttack.availableMoves.Count == 0 && !opponent.CanHidePieceFromAttack<King>(CurrentTurnPlayer))
+            {
+                Debug.Log("GameFinished : Lost ->" + opponent.team);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -78,7 +99,7 @@ public class ChessGameController : MonoBehaviour
     {
         CurrentTurnPlayer = GetOpponentToPlayer();
     }
-    private ChessPlayer GetOpponentToPlayer()
+    public ChessPlayer GetOpponentToPlayer()
     {
         return (CurrentTurnPlayer == whitePlayer)?blackPlayer : whitePlayer;
     }
@@ -111,21 +132,33 @@ public class ChessGameController : MonoBehaviour
         ChessPlayer currentPlayer = (teamColor == TeamColor.White) ? whitePlayer : blackPlayer;
         currentPlayer.AddPiece(chessPiece);
     }
-    public bool IsGameInProgress()
-    {
-        return  true;
-    }
-    //Todo:check if game is ended (win/ lose /draw)
     public void EndTurn()
     {
+        Debug.Log("TurnEnded");
         GeneratePlayerValidMoves(CurrentTurnPlayer);
         GeneratePlayerValidMoves(GetOpponentToPlayer());
-        ChangePlayerTurn();
+
+        if(IsGameFinished())
+            EndGame();
+        else {
+            ChangePlayerTurn();
+        }
     }
-    //TODO:sets the state to finished
     public void EndGame()
     {
+        Debug.LogWarning("Game Ended");
+        gameState = State.Finish;
+    }
 
+    internal void RemoveMovesEnablingAttakOnPieceOfType<T>(Piece piece) where T : Piece
+    {
+        CurrentTurnPlayer.RemoveMovesEnablingAttackOnPiece<T>(GetOpponentToPlayer(), piece);
+    }
+
+    internal void OnPieceRemoved(Piece piece)
+    {
+        ChessPlayer pieceOwner = (piece.team == TeamColor.White) ? whitePlayer : blackPlayer;
+        pieceOwner.RemovePiece(piece);
     }
 }
 }

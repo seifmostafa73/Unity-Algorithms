@@ -26,19 +26,12 @@ namespace Chess_Classes {
         }
 
         /// <summary>
-        ///
+        /// Updates the grid array values (swaps the old piece position with the new one's)
         /// </summary>
-        private void UpdateBoard(Vector2Int newCoordinates,Piece newPiece) {
-            Piece oldPiece = GetPieceOnSquare(newCoordinates);
-            Vector2Int oldCoordinates = newPiece.occupiedSquare;
+        public void UpdateBoard(Vector2Int newCoordinates,Piece newPiece,Vector2Int oldCoordinates,Piece oldPiece) {
 
             SetPieceOnSquare(oldCoordinates,oldPiece);
             SetPieceOnSquare(newCoordinates,newPiece);
-
-            newPiece.MovePiece(newCoordinates);
-
-            if(oldPiece!=null)
-                oldPiece.MovePiece(oldCoordinates);
 
             PrintBoard();
         }
@@ -48,6 +41,7 @@ namespace Chess_Classes {
         /// and calls the SquareSelectorManager class to highlight the available moves
         /// </summary>
         private void SelectPiece(Piece piece) {
+            chessGameController.RemoveMovesEnablingAttakOnPieceOfType<King>(piece);
             selectedPiece = piece;
             List<Vector2Int> availableMoves = piece.availableMoves;
             ShowAvailableMoves(availableMoves);
@@ -92,7 +86,7 @@ namespace Chess_Classes {
         public void OnSquareSelected(Vector3 squarePosition)
         {
             Vector2Int squareCoordinates = CalculatedCoordinates(squarePosition);
-            Debug.Log(squareCoordinates);
+            //Debug.Log(squareCoordinates);
             if(!CheckSquareValidity(squareCoordinates)) return;
 
 
@@ -178,20 +172,23 @@ namespace Chess_Classes {
         }
 
         /// <summary>
-        /// Handles Conditions after any piece has moved
+        /// Moves the actual pieces objects
         /// <param name="squareCoordinates">Square that the selected piece moved to</param>
         /// <param name="piece">Selected piece</param>
         /// </summary>
-
         public void OnSelectedPieceMoved(Vector2Int squareCoordinates, Piece piece) {
-            UpdateBoard(squareCoordinates,piece);
+            TryTakeOpponentPiece(squareCoordinates);
+
+            var oldCoordinates = piece.occupiedSquare;
+            UpdateBoard(squareCoordinates,piece,oldCoordinates,null);
+            selectedPiece.MovePiece(squareCoordinates);
             DeselectPiece();
             chessGameController.EndTurn();
         }
+
         /// <summary>
         /// print the grid array as a easy to read form
         /// </summary>
-
         void PrintBoard()
         {
             string BoardString = "";
@@ -199,13 +196,22 @@ namespace Chess_Classes {
                 BoardString += y+" : ";
                 for (int x = 0; x < 8; x++) {
                     if (grid[x, y] != null)
-                        BoardString += " "+grid[x,y].team.ToString()[0]+"-"+grid[x,y].name.Substring(0,2);// we take only first 3 letters to avoid printing overkill
+                        BoardString += "     "+grid[x,y].team.ToString()[0]+"-"+grid[x,y].name.Substring(0,2) + "     ";// we take only first 3 letters to avoid printing overkill
                     else
-                        BoardString += " # ";
+                        BoardString += "    ####    ";
                 }
                 BoardString+="\n";
             }
             Debug.Log(BoardString);
+        }
+
+        private void TryTakeOpponentPiece(Vector2Int squareCoordinates) {
+            var opponentPiece = GetPieceOnSquare(squareCoordinates);
+            if(opponentPiece!= null && opponentPiece.team != chessGameController.GetActivePlayer().team)
+            {
+                chessGameController.GetOpponentToPlayer().RemovePiece(opponentPiece);
+                Destroy(opponentPiece.gameObject);
+            }
         }
 
 

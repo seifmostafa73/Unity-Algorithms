@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace Chess_Classes {
     [RequireComponent(typeof(MaterialSetter))]
@@ -55,9 +56,21 @@ namespace Chess_Classes {
         public void SetMaterial(Material _material) {
             materialSetter.SetMaterial(_material);
         }
-        //TODO: Checks if the given piece type is being attacked in the available moves of this piece
+
+        /// <summary>
+        ///  Checks if the given piece type is being attacked in the available moves of this piece
+        /// </summary>
+        /// <typeparam name="T"> Type of piece being attacked</typeparam>
+        /// <returns> true if there is a piece attacking the given type</returns>
         public bool IsAttackingPieceOfType<T>() where T: Piece
         {
+            foreach (var move in availableMoves)
+            {
+                if(board.GetPieceOnSquare(move) is T)
+                {
+                    return true;
+                }
+            }
             return false;
         }
     }

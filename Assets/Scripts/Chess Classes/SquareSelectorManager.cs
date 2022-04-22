@@ -24,7 +24,7 @@ namespace Chess_Classes {
         public void ClearSelection()
         {
             if(highlightedSquares.Count == 0) return;
-            Debug.Log(highlightedSquares.Count == 0);
+            //Debug.Log(highlightedSquares.Count == 0);
             foreach (var square in highlightedSquares)
             {
                 GameObject.Destroy(square);
